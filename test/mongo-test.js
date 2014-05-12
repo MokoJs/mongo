@@ -46,4 +46,24 @@ describe('Moko mongo', function() {
       expect(yield col.findOne({name: 'Bob'})).to.be.ok();
     });
   });
+
+  describe('update', function() {
+    it('updates the record', function*() {
+      var bob = yield new User({name: 'Bob'});
+      yield bob.save();
+      expect(bob._id).to.be.ok();
+      bob.name = 'Steve';
+      yield bob.save();
+      expect(yield col.findOne({name: 'Steve'})).to.be.ok();
+    });
+  });
+
+  describe('remove', function() {
+    it('removes the record', function*() {
+      var phil = yield new User({name: 'Phil'});
+      yield phil.save();
+      yield phil.remove();
+      expect(yield col.findOne({name: 'Phil'})).to.not.be.ok();
+    });
+  });
 });

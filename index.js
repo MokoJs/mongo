@@ -13,7 +13,12 @@ module.exports = function *(connectionString) {
       return yield Model.db.insert(this._dirty)
     };
 
-    Model.update = function*() { };
-    Model.remove = function*() { };
+    Model.update = function*() {
+      return yield Model.db.update({_id: this.primary()}, { $set: this._dirty }, {new: true});
+    };
+
+    Model.remove = function*() {
+      return yield Model.db.remove({_id: this.primary()});
+    };
   }
 };
