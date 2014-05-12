@@ -37,4 +37,13 @@ describe('Moko mongo', function() {
       User.use(db('User'));
     });
   });
+
+  describe('save', function() {
+    it('saves the record', function*() {
+      var bob = yield new User({name: 'Bob'});
+      yield bob.save();
+      expect(bob._id).to.be.ok();
+      expect(yield col.findOne({name: 'Bob'})).to.be.ok();
+    });
+  });
 });

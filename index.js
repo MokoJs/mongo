@@ -9,7 +9,10 @@ module.exports = function *(connectionString) {
   function plugin(collection, Model) {
     Model.db = db.collection(collection);
 
-    Model.save = function*() { };
+    Model.save = function*() { 
+      return yield Model.db.insert(this._dirty)
+    };
+
     Model.update = function*() { };
     Model.remove = function*() { };
   }
