@@ -27,5 +27,17 @@ module.exports = function *(connectionString) {
 
       return yield new Model(records);
     };
+
+    Model.get = Model.find = function*() {
+      var args = Array.prototype.slice.call(arguments);
+
+      if(!args[0]) return false;
+      if(typeof args[0] == 'string') args[0] = Kongo.Id(args[0]);
+      else if(typeof args[0] == 'object' && args[0]._id) args[0]._id = Kongo.Id(args[0]._id);
+
+      var result = yield Model.db.findOne.apply(Model.db, args);
+
+      return result ? yield new Model(result) : false;
+    };
   }
 };

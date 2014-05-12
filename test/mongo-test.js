@@ -4,7 +4,7 @@ var moko = require('moko'),
     mongo = require('../');
 
 describe('Moko mongo', function() {
-  var User = moko('User').attr('_id').attr('name'),
+  var User = moko('User').attr('_id').attr('name').attr('age'),
       db;
 
   before(function*() {
@@ -67,30 +67,67 @@ describe('Moko mongo', function() {
     });
   });
 
-  describe('all', function() {
+
+  describe('query methods', function() {
+    var larry, moe, curly;
     before(function*() {
-      var larry = yield new User({name: 'Larry'}),
-          moe   = yield new User({name: 'Moe'}),
-          curly = yield new User({name: 'Curly'});
+      larry = yield new User({name: 'Larry', age: 30});
+      moe   = yield new User({name: 'Moe'});
+      curly = yield new User({name: 'Curly'});
       yield [larry.save(), moe.save(), curly.save()]
     });
 
-    it('returns an empty array if no records match', function*() {
-      var users = yield User.all({name: 'Boeboe'});
-      expect(users).to.be.an(Array);
-      expect(users).to.have.length(0);
+    describe('all', function() {
+      it('returns an empty array if no records match', function*() {
+        var users = yield User.all({name: 'Boeboe'});
+        expect(users).to.be.an(Array);
+        expect(users).to.have.length(0);
+      });
+
+      it('returns an array of instances', function*() {
+        var users = yield User.all({name: 'Larry'});
+        expect(users).to.be.an(Array);
+        expect(users).to.have.length(1);
+        expect(users[0]).to.be.a(User);
+      });
+
+      it('forwards options', function*() {
+        var users = yield User.all({name: { $in: ['Larry', 'Moe', 'Curly'] }}, { limit: 2});
+        expect(users).to.have.length(2);
+      });
     });
 
-    it('returns an array of instances', function*() {
-      var users = yield User.all({name: 'Larry'});
-      expect(users).to.be.an(Array);
-      expect(users).to.have.length(1);
-      expect(users[0]).to.be.a(User);
-    });
+    describe('get', function() {
+      it('aliases to Model.find', function() {
+        expect(User.get).to.be(User.find);
+      });
 
-    it('forwards options', function*() {
-      var users = yield User.all({name: { $in: ['Larry', 'Moe', 'Curly'] }}, { limit: 2});
-      expect(users).to.have.length(2);
+      it('returns false if the model does not exist', function*() {
+        expect(yield User.find({name: 'Princess'})).to.be(false);
+      });
+
+      it('returns an instance of the model', function*() {
+        expect(yield User.find({name: 'Larry'})).to.be.a(User);
+      });
+
+      it('works with a string as a first argument', function*() {
+        expect(yield User.find(larry.primary().toString())).to.be.a(User);
+      });
+
+      it('works with a string in _id', function*() {
+        expect(yield User.find({_id: larry.primary().toString()})).to.be.a(User);
+      });
+
+      it('returns false if undefined is passed in', function*() {
+        expect(yield User.find(undefined)).to.be(false);
+      });
+
+      it('forwards options', function*() {
+        var newLarry = yield new User({name: 'Larry', age: 60});
+        yield newLarry.save();
+        expect(yield User.find({name: 'Larry'}, {sort: {age: -1}})).to.have.property('age', 60);
+        expect(yield User.find({name: 'Larry'}, {sort: {age:  1}})).to.have.property('age', 30);
+      });
     });
   });
 });
