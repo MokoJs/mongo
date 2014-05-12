@@ -12,7 +12,8 @@
   },
   "keywords": [
     "mongo",
-    "moko-plugin"
+    "moko-plugin",
+    "moko-sync"
   ],
   "author": "Ryan Schmukler",
   "license": "MIT",
@@ -25,5 +26,8 @@
     "mocha": "^1.18.2",
     "co-mocha": "0.0.4",
     "moko": "^0.1.1"
+  },
+  "dependencies": {
+    "kongo": "0.0.4"
   }
 }
