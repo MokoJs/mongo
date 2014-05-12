@@ -19,5 +19,11 @@
   "bugs": {
     "url": "https://github.com/MokoJs/mongo/issues"
   },
-  "homepage": "https://github.com/MokoJs/mongo"
+  "homepage": "https://github.com/MokoJs/mongo",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^1.18.2",
+    "co-mocha": "0.0.4",
+    "moko": "^0.1.1"
+  }
 }
