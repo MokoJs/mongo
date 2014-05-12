@@ -129,5 +129,18 @@ describe('Moko mongo', function() {
         expect(yield User.find({name: 'Larry'}, {sort: {age:  1}})).to.have.property('age', 30);
       });
     });
+
+    describe('removeAll', function() {
+      it('removes records that match the query', function*() {
+        var boe  = yield new User({name: 'Boe',  age: 20}),
+            mark = yield new User({name: 'Mark', age: 20});
+
+        yield [boe.save(), mark.save()];
+        var removed = yield User.removeAll({age: 20});
+        expect(removed).to.be(2);
+        var users = yield User.all({age: 20});
+        expect(users).to.have.length(0);
+      });
+    });
   });
 });

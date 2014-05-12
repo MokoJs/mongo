@@ -39,5 +39,10 @@ module.exports = function *(connectionString) {
 
       return result ? yield new Model(result) : false;
     };
+
+    Model.removeAll = function*() {
+      var args = Array.prototype.slice.call(arguments);
+      return (yield Model.db.remove.apply(Model.db, args))[0];
+    };
   }
 };
