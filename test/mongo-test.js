@@ -66,4 +66,31 @@ describe('Moko mongo', function() {
       expect(yield col.findOne({name: 'Phil'})).to.not.be.ok();
     });
   });
+
+  describe('all', function() {
+    before(function*() {
+      var larry = yield new User({name: 'Larry'}),
+          moe   = yield new User({name: 'Moe'}),
+          curly = yield new User({name: 'Curly'});
+      yield [larry.save(), moe.save(), curly.save()]
+    });
+
+    it('returns an empty array if no records match', function*() {
+      var users = yield User.all({name: 'Boeboe'});
+      expect(users).to.be.an(Array);
+      expect(users).to.have.length(0);
+    });
+
+    it('returns an array of instances', function*() {
+      var users = yield User.all({name: 'Larry'});
+      expect(users).to.be.an(Array);
+      expect(users).to.have.length(1);
+      expect(users[0]).to.be.a(User);
+    });
+
+    it('forwards options', function*() {
+      var users = yield User.all({name: { $in: ['Larry', 'Moe', 'Curly'] }}, { limit: 2});
+      expect(users).to.have.length(2);
+    });
+  });
 });

@@ -20,5 +20,12 @@ module.exports = function *(connectionString) {
     Model.remove = function*() {
       return yield Model.db.remove({_id: this.primary()});
     };
+
+    Model.all = function*() {
+      var args = Array.prototype.slice.call(arguments),
+          records = yield Model.db.find.apply(Model.db, args);
+
+      return yield new Model(records);
+    };
   }
 };
