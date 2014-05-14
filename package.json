@@ -28,6 +28,6 @@
     "moko": "^0.1.1"
   },
   "dependencies": {
-    "kongo": "0.0.4"
+    "kongo": "0.0.5"
   }
 }
