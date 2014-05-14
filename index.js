@@ -44,5 +44,7 @@ module.exports = function *(connectionString) {
       var args = Array.prototype.slice.call(arguments);
       return (yield Model.db.remove.apply(Model.db, args))[0];
     };
+
+    Model.index = Model.db.ensureIndex;
   }
 };

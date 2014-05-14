@@ -143,4 +143,12 @@ describe('Moko mongo', function() {
       });
     });
   });
+
+  describe('other methods', function() {
+    describe('Model.index', function() {
+      it('aliases to db.ensureIndex', function() {
+        expect(User.index).to.be(User.db.ensureIndex);
+      });
+    });
+  });
 });
