@@ -79,3 +79,7 @@ removed
 var removed = yield User.removeAll({deleted: true});
 console.log("%d user accounts were removed", removed);
 ```
+
+#### Model.index(fields, [options])
+
+Alias to `Model.db.ensureIndex`. Lets you make indexes!
