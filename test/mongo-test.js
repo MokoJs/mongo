@@ -1,6 +1,7 @@
 var moko = require('moko'),
     expect = require('expect.js'),
     Kongo = require('kongo'),
+    mquery = require('mquery'),
     mongo = require('../');
 
 describe('Moko mongo', function() {
@@ -148,6 +149,22 @@ describe('Moko mongo', function() {
     describe('Model.index', function() {
       it('aliases to db.ensureIndex', function() {
         expect(User.index).to.be(User.db.ensureIndex);
+      });
+    });
+
+    describe('Model.query', function() {
+      before(function*() {
+        var steve = yield new User({name: 'Steve'});
+        yield steve.save();
+      });
+      it('creates a mquery instance', function() {
+        expect(User.query()).to.be.a(mquery);
+      });
+
+      it('returns instances of model', function*() {
+        var users = yield User.query().find({name: 'Steve'});
+        expect(users).to.be.a(Array);
+        expect(users[0]).to.be.a(User);
       });
     });
   });

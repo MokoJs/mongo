@@ -25,9 +25,15 @@
     "expect.js": "^0.3.1",
     "mocha": "^1.18.2",
     "co-mocha": "0.0.4",
-    "moko": "^0.1.1"
+    "moko": "^0.1.1",
+    "co": "^3.0.6"
+  },
+  "peerDependencies": {
+    "co": "*"
   },
   "dependencies": {
-    "kongo": "0.0.5"
+    "kongo": "0.0.5",
+    "maggregate": "^0.2.1",
+    "mquery": "git://github.com/rschmukler/mquery"
   }
 }

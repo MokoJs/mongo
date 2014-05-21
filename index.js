@@ -1,4 +1,7 @@
-var Kongo = require('kongo');
+var co = require('co');
+
+var Kongo = require('kongo'),
+    mquery = require('mquery');
 
 module.exports = function *(connectionString) {
   var db = yield Kongo.Client.connect(connectionString);
@@ -46,5 +49,19 @@ module.exports = function *(connectionString) {
     };
 
     Model.index = Model.db.ensureIndex;
+
+    Model.query = function() {
+      var query = mquery(Model.db._collection);
+      var exec = query.exec;
+      query.exec = function(cb) {
+        exec.call(query, function(err, results) {
+          co(function*() {
+            if(err) throw err;
+            return yield new Model(results);
+          })(cb);
+        });
+      };
+      return query;
+    };
   }
 };
