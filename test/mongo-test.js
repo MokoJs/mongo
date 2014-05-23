@@ -2,6 +2,7 @@ var moko = require('moko'),
     expect = require('expect.js'),
     Kongo = require('kongo'),
     mquery = require('mquery'),
+    maggregate = require('maggregate'),
     mongo = require('../');
 
 describe('Moko mongo', function() {
@@ -165,6 +166,31 @@ describe('Moko mongo', function() {
         var users = yield User.query().find({name: 'Steve'});
         expect(users).to.be.a(Array);
         expect(users[0]).to.be.a(User);
+      });
+    });
+
+    describe('Model.aggregate', function() {
+      before(function*() {
+        yield User.removeAll();
+        var steve = yield new User({name: 'Steve', age: 30 }),
+            mike  = yield new User({name: 'Mike' , age: 20 });
+        yield [steve.save(), mike.save()];
+      });
+      it('creates a aggregate instance', function() {
+        expect(User.aggregate()).to.be.a(maggregate);
+      });
+
+      it('returns instances by default', function*() {
+        var instances = yield User.aggregate().match({name: 'Steve'})
+        expect(instances[0]).to.be.a(User);
+      });
+
+      it('allows skipping of wrapping', function*() {
+        var result = yield User.aggregate(true)
+              .group({_id: 1, averageAge: {$avg: '$age' }})
+
+        expect(result[0]).to.not.be.a(User);
+        expect(result[0].averageAge).to.be(25);
       });
     });
   });

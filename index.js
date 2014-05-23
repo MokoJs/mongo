@@ -1,7 +1,8 @@
 var co = require('co');
 
 var Kongo = require('kongo'),
-    mquery = require('mquery');
+    mquery = require('mquery'),
+    maggregate = require('maggregate');
 
 module.exports = function *(connectionString) {
   var db = yield Kongo.Client.connect(connectionString);
@@ -62,6 +63,21 @@ module.exports = function *(connectionString) {
         });
       };
       return query;
+    };
+
+    Model.aggregate = function(skip) {
+      var aggregate = maggregate(Model.db._collection),
+          exec = aggregate.exec;
+      aggregate.exec = function(cb) {
+        exec.call(aggregate, function(err, results) {
+          co(function*() {
+            if(err) throw err;
+            if(skip) return results;
+            return yield new Model(results);
+          })(cb);
+        });
+      };
+      return aggregate;
     };
   }
 };
