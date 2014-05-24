@@ -83,3 +83,48 @@ console.log("%d user accounts were removed", removed);
 #### Model.index(fields, [options])
 
 Alias to `Model.db.ensureIndex`. Lets you make indexes!
+
+### Model.query()
+
+Returns a wrapped instances of `mquery`. See [mquery support](#mquery-support) below.
+
+### Model.aggregate(bool)
+
+Returns a wrapped instances of `maggregate`. See [maggregate support](#maggregate-support) below.
+
+Optionally, if don't want it to return `Model` instances, you can use `Model.aggregate(true)` to skip wrapping the instances.
+
+## mquery support
+
+`moko-mongo` provides a wrapped version of the wonderful [mquery](https://github.com/aheckmann/mquery) 
+query builder. To get it, simply call `Model.query()`.
+This allows you to build readable and robust queries easily. When approprirate,
+modella-mongo will return instances of `modella` models, instead of just
+documents. Aside from that, it follows the `mquery` API completely.
+
+### Example with mquery
+
+```js
+  var bob = yield User.query().findOne().where({username: 'Bob'})
+```
+
+## maggregate support
+
+`moko-mongo` uses the [maggregate](https://github.com/rschmukler/maggregate) 
+aggregation builder. To use it, simply call `Model.aggregate()`.
+
+This allows you to build readable aggregations easily. By default it wraps
+responses in `Model` instances, but can be disabled by passing `skipWrap` as
+`true`. It also follows the `maggregate` api completely.
+
+### Example with maggregate
+
+```js
+var skipWrapping = true;
+locations = yield User.aggregate(skipWrapping)
+  .group({_id: '$location', userCount: {$sum: 1}});
+
+locations.forEach(function(location) {
+  console.log("%s has %d users", location._id, userCount);
+});
+```
