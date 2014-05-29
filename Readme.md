@@ -121,7 +121,8 @@ responses in `Model` instances, but can be disabled by passing `skipWrap` as
 
 ```js
 var skipWrapping = true;
-locations = yield User.aggregate(skipWrapping)
+
+var locations = yield User.aggregate(skipWrapping)
   .group({_id: '$location', userCount: {$sum: 1}});
 
 locations.forEach(function(location) {
