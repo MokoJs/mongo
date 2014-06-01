@@ -129,3 +129,21 @@ locations.forEach(function(location) {
   console.log("%s has %d users", location._id, userCount);
 });
 ```
+
+## Note on Connection Usage
+
+Each time you `yield mongo(connectionString)` you are opening an **independent** connection to the database. 
+If you have multiple models, you could end up opening multiple connections to the database if you are not careful. 
+This is likely not what you want. You should therefor use `yield mongo(connectionString)` once, and then 
+have all of your models use that connection.
+
+
+```js
+var mongo = require('moko-mongo');
+co(function*() { 
+  var db = yield mongo(connectionString);
+  User.use(db);
+  Post.use(db);
+  AnotherModel.use(db);
+})()
+```
