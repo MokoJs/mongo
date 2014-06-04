@@ -138,8 +138,7 @@ describe('Moko mongo', function() {
             mark = yield new User({name: 'Mark', age: 20});
 
         yield [boe.save(), mark.save()];
-        var removed = yield User.removeAll({age: 20});
-        expect(removed).to.be(2);
+        yield User.removeAll({age: 20});
         var users = yield User.all({age: 20});
         expect(users).to.have.length(0);
       });
