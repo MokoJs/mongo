@@ -32,7 +32,7 @@
     "co": "*"
   },
   "dependencies": {
-    "kongo": "0.0.5",
+    "kongo": "~0.0.5",
     "maggregate": "^0.2.1",
     "mquery": "git://github.com/rschmukler/mquery"
   }

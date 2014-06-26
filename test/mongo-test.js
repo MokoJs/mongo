@@ -47,6 +47,13 @@ describe('Moko mongo', function() {
       expect(bob._id).to.be.ok();
       expect(yield col.findOne({name: 'Bob'})).to.be.ok();
     });
+
+    it('stores undefined attrs', function*() {
+      var bob = yield new User({name: undefined, age: 22 });
+      yield bob.save();
+      bob = yield User.find(bob._id);
+      expect(bob.name).to.be(undefined);
+    });
   });
 
   describe('update', function() {
@@ -57,6 +64,15 @@ describe('Moko mongo', function() {
       bob.name = 'Steve';
       yield bob.save();
       expect(yield col.findOne({name: 'Steve'})).to.be.ok();
+    });
+
+    it('unsets undefined attrs', function*() {
+      var bob = yield new User({name: 'Bob'});
+      yield bob.save();
+      bob.name = undefined;
+      yield bob.save();
+      bob = yield User.find(bob._id);
+      expect(bob.name).to.be(undefined);
     });
   });
 

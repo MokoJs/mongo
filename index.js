@@ -2,7 +2,8 @@ var co = require('co');
 
 var Kongo = require('kongo'),
     mquery = require('mquery'),
-    maggregate = require('maggregate');
+    maggregate = require('maggregate'),
+    clone = require('moko').utils.clone;
 
 module.exports = function *(connectionString) {
   var db = yield Kongo.Client.connect(connectionString);
@@ -13,12 +14,12 @@ module.exports = function *(connectionString) {
   function plugin(collection, Model) {
     Model.db = db.collection(collection);
 
-    Model.save = function*() { 
-      return yield Model.db.insert(this._dirty)
+    Model.save = function*() {
+      return yield Model.db.insert(deleteUndefinedKeys(this._dirty));
     };
 
     Model.update = function*() {
-      return yield Model.db.update({_id: this.primary()}, { $set: this._dirty }, {new: true});
+      return yield Model.db.update({_id: this.primary()}, buildQuery(this._dirty), {new: true});
     };
 
     Model.remove = function*() {
@@ -81,3 +82,38 @@ module.exports = function *(connectionString) {
     };
   }
 };
+
+function buildQuery(dirty) {
+  var newDirty = clone(dirty);
+  var query = {
+    $set: {},
+    $unset: {}
+  };
+
+  for(var key in newDirty) {
+    if(newDirty[key] === undefined) {
+      delete newDirty[key];
+      query.$unset[key] = true;
+    } else {
+      query.$set[key] = newDirty[key];
+    }
+  }
+
+  for(var key in query) {
+    if(Object.keys(query[key]).length === 0) {
+      delete query[key];
+    }
+  }
+
+  return query;
+}
+
+function deleteUndefinedKeys(obj) {
+  var newObj = clone(obj);
+  for(var key in newObj) {
+    if(newObj[key] === undefined) {
+      delete newObj[key];
+    }
+  }
+  return newObj;
+}
